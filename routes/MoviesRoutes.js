@@ -1,26 +1,27 @@
 const express = require('express');
-// const {
-//     createWorkout,
-//     getWorkout,
-//     getWorkouts,
-//     deleteWorkout,
-//     updateWorkout
-// } = require('../controllers/workoutController')
+const {
+    createMovies,
+    getMovies,
+    getMovie,
+    deleteMovies,
+    updateMovies
+} = require('../controllers/moviesController')
 
 const router = express.Router();
 
+// POST A NEW MOVIES
+router.post('/', createMovies)
 
 // GET ALL MOVIES
-// router.get('/', getWorkouts)
+router.get('/', getMovies)
 
-// GET A SINGLE MOVIES
-// router.get('/:id', getWorkout)
+// GET SINGLE MOVIE
+router.get('/:id', getMovie)
 
+// DELETE A SINGLE MOVIES
+router.delete('/:id', deleteMovies);
 
-// DELETE A MOVIES
-// router.delete('/:id', deleteWorkout);
-
-// UPDATE A MOVIES
-// router.patch('/:id', updateWorkout);
+// UPDATE SINGLE MOVIES
+router.patch('/:id', updateMovies);
 
 module.exports = router;

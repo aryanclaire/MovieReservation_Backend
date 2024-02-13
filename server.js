@@ -12,7 +12,7 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors'); 
 const mongoose = require('mongoose')
-// const workoutRoutes = require('./routes/workouts.js') //NOT 
+const movieRoutes = require('./routes/MoviesRoutes') //NOT 
 const app = express();
 
 // Enable CORS for all routes
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 // routes
-// app.use('/api/workouts', workoutRoutes);
+app.use('/api/movies', movieRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
