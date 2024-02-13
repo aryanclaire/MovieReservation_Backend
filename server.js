@@ -13,6 +13,7 @@ const express = require('express');
 const cors = require('cors'); 
 const mongoose = require('mongoose')
 const movieRoutes = require('./routes/MoviesRoutes') //NOT 
+const detailRoutes = require('./routes/DetailsRoutes')
 const app = express();
 
 // Enable CORS for all routes
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api/movies', movieRoutes);
+app.use('/api/details', detailRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
