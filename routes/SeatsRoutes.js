@@ -22,6 +22,6 @@ router.get('/:m_id/:id', getSeat)
 // router.delete('/:id', deleteMovies);
 
 // UPDATE SINGLE SEAT
-router.patch('/:r_id/:id', updateSeat)
+router.patch('/:m_id/:id', updateSeat)
 
 module.exports = router;

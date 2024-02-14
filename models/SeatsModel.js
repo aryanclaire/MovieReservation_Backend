@@ -3,10 +3,10 @@ const { Schema } = mongoose
 
 
 const seatsSchema = new Schema({
-    // m_id:{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Movie'
-    // },
+    m_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Movie'
+    },
     position: {
         type: String,
         required: true
