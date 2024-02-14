@@ -47,7 +47,19 @@ const moviesSchema = new Schema({
     m_poster: {
         type: String,
         required: false
-    }
+    },
+    m_seat: [
+        {
+            position: {
+                type: String,
+                required: true
+            },
+            is_occupied: {
+                type: Boolean,
+                required: true
+            }
+        }
+    ]
 }, {timestamps: true})
 
 module.exports = mongoose.model('Movies', moviesSchema)
