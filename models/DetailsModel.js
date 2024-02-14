@@ -15,8 +15,8 @@ const detailsSchema = new Schema({
         required: true
     },
     senior: {
-        type: Boolean,
-        required: false
+        type: Number,
+        required: true
     },
     seat: [
         {

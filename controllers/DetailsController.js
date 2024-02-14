@@ -17,11 +17,13 @@ const createDetails = async (req, res) => {
     }
 }
 
-// GET ALL MOVIES  
+//GET ALL DETAILS
 const getDetails = async (req, res) => {
     const details = await Details.find({}).sort({createdAt: -1})
     res.status(200).json(details)
 }
+
+
 
 
 

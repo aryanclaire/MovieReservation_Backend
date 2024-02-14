@@ -9,7 +9,7 @@ const router = express.Router();
 // POST A NEW MOVIES
 router.post('/', createDetails)
 
-// GET ALL MOVIES
+// GET ALL DETAILS
 router.get('/', getDetails)
 
 module.exports = router;
