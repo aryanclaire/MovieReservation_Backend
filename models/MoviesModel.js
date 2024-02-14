@@ -17,7 +17,7 @@ const moviesSchema = new Schema({
         required: false
     },
     m_mpa: {
-        type: Number,
+        type: String,
         required: false
     },
     m_hrs: {
@@ -47,6 +47,10 @@ const moviesSchema = new Schema({
     m_poster: {
         type: String,
         required: false
+    },
+    m_type: {
+        type: String,
+        required: true
     },
     m_seat: [
         {
