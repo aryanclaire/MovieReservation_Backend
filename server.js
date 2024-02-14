@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api/movies', movieRoutes);
-app.use('/api/seats', seatRoutes);
+app.use('/api/movies/seats', seatRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
