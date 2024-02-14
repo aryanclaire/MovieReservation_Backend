@@ -21,18 +21,18 @@ const detailsSchema = new Schema({
     seat: [
         {
             s_id:{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "SeatsModel",
+                // type: mongoose.Schema.Types.ObjectId,
+                // ref: "SeatsModel",
                 type: String,
-                required: true
+                required: false
             }
         }
     ],
     m_id:{
-        type: mongoose.Schema.Types.ObjectId,
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref: "MoviesModel",
         type: String,
-        ref: "MoviesModel",
-        required: true
+        required: false
     }
 }, {timestamps: true})
 
