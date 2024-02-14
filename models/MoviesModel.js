@@ -48,6 +48,10 @@ const moviesSchema = new Schema({
         type: String,
         required: false
     },
+    m_type: {
+        type: String,
+        required: true
+    },
     m_seat: [
         {
             position: {
