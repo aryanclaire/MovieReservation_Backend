@@ -2,21 +2,42 @@ const mongoose = require('mongoose')
 
 // import model
 const Movies = require('../models/MoviesModel')
-
+const Seats = require('../models/SeatsModel')
 
 
 // CREATE NEW 
 const createMovies = async (req, res) => {
-    const { m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime,  m_endtime, m_price, m_cinema, m_poster } = req.body;
+    const { m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster } = req.body;
 
     // add doc to db
     try {
-        const movies = await Movies.create({ m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime,  m_endtime, m_price, m_cinema, m_poster });
-        res.status(200).json(movies);
+        const rows = 8;
+        const seatsPerRow = 5;
+        const seatLayout = await Promise.all(Array.from({ length: rows }, async (_, rowIndex) =>
+            Promise.all(Array.from({ length: seatsPerRow }, async (_, seatIndex) => {
+                const seat = seatIndex + 1;
+                const seatPosition = String.fromCharCode(65 + rowIndex) + seat; // Concatenate row and seat
+                const seatIsOccupied = false; // Assuming the seat is initially not occupied
+                const seatDoc = await Seats.create({ position: seatPosition, is_occupied: seatIsOccupied });
+                return seatDoc; // Return the created seat
+            }))
+        ));
+
+        // Create the movie
+        const movie = await Movies.create({
+            m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster
+        });
+
+        // Associate the created seats with the movie
+        movie.m_seat = seatLayout.flat(); // Assuming the movie schema has m_seat field for storing seats
+        await movie.save();
+
+        res.status(200).json(movie);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }
+
 
 // GET ALL MOVIES  
 const getMovies = async (req, res) => {
