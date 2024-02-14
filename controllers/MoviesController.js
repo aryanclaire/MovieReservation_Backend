@@ -91,6 +91,37 @@ const updateMovies = async (req, res) => {
     res.status(200).json(movies)
 }
 
+const updateMovieSeat = async (req, res) => {
+    const { m_id, position } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(m_id)) {
+        return res.status(404).json({ error: 'Invalid movie ID' });
+    }
+
+    try {
+        const movie = await Movies.findById(m_id);
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+
+        // Find the seat index in the m_seat array by position
+        const seatIndex = movie.m_seat.findIndex(seat => seat.position === position);
+        if (seatIndex === -1) {
+            return res.status(404).json({ error: 'Seat not found' });
+        }
+
+        // Update is_occupied field of the found seat
+        movie.m_seat[seatIndex].is_occupied = false;
+
+        // Save the updated movie document
+        const updatedMovie = await movie.save();
+
+        res.status(200).json(updatedMovie);
+    } catch (error) {
+        console.error('Error updating movie seat:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 
 // export function
 module.exports = {
@@ -98,5 +129,6 @@ module.exports = {
     getMovies,
     getMovie,
     deleteMovies,
-    updateMovies
+    updateMovies,
+    updateMovieSeat
 }
