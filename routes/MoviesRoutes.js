@@ -4,7 +4,10 @@ const {
     getMovies,
     getMovie,
     deleteMovies,
-    updateMovies
+    updateMovies,
+
+    updateSeatOccupancy,
+
 } = require('../controllers/moviesController')
 
 const router = express.Router();
@@ -23,5 +26,9 @@ router.delete('/:id', deleteMovies);
 
 // UPDATE SINGLE MOVIES
 router.patch('/:id', updateMovies);
+
+
+
+router.patch('/:movieId/:position', updateSeatOccupancy);
 
 module.exports = router;
