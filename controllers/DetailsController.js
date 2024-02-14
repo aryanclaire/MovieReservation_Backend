@@ -5,7 +5,6 @@ const Details = require('../models/DetailsModel')
 const Movies = require('../models/MoviesModel')
 
 
-
 // CREATE NEW 
 const createDetails = async (req, res) => {
     const { f_name, m_name, l_name, senior } = req.body;
