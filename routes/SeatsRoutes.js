@@ -12,16 +12,16 @@ const router = express.Router();
 // POST A NEW MOVIES
 router.post('/', createSeats)
 
-// GET ALL MOVIES
-router.get('/', getSeats)
+// GET ALL SEATS
+router.get('/:id', getSeats)
 
-// GET SINGLE MOVIE
-router.get('/:id', getSeat)
+// GET SINGLE SEAT
+router.get('/:m_id/:id', getSeat)
 
-// // DELETE A SINGLE MOVIES
+// // DELETE A SINGLE SEATS
 // router.delete('/:id', deleteMovies);
 
-// UPDATE SINGLE MOVIES
-router.patch('/:id', updateSeat)
+// UPDATE SINGLE SEAT
+router.patch('/:r_id/:id', updateSeat)
 
 module.exports = router;
