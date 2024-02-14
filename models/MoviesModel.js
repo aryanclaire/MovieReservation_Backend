@@ -17,7 +17,7 @@ const moviesSchema = new Schema({
         required: false
     },
     m_mpa: {
-        type: Number,
+        type: String,
         required: false
     },
     m_hrs: {

@@ -12,7 +12,7 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors'); 
 const mongoose = require('mongoose')
-const movieRoutes = require('./routes/MoviesRoutes') //NOT 
+const movieRoutes = require('./routes/MoviesRoutes')  
 const app = express();
 
 // Enable CORS for all routes
