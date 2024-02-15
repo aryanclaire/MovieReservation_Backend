@@ -8,7 +8,6 @@ const Movies = require('../models/MoviesModel')
 const createMovies = async (req, res) => {
     const { m_title, m_desc, m_genre, m_type, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster } = req.body;
 
-<<<<<<< HEAD
     // Create m_seat array
     const m_seat = [];
     const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -20,25 +19,6 @@ const createMovies = async (req, res) => {
                 position: `${row}${column}`,
                 is_occupied: false
             });
-=======
-    // add doc to db
-    try {
-        const rows = 8;
-        const seatsPerRow = 5;
-        const seatLayout = await Promise.all(Array.from({ length: rows }, async (_, rowIndex) =>
-            Promise.all(Array.from({ length: seatsPerRow }, async (_, seatIndex) => {
-                const seat = seatIndex + 1;
-                const seatPosition = String.fromCharCode(65 + rowIndex) + seat; // Concatenate row and seat
-                const seatIsOccupied = true; // Assuming the seat is initially not occupied
-                const seatDoc = await Seats.create({ position: seatPosition, is_occupied: seatIsOccupied });
-                return seatDoc; // Return the created seat
-            }))
-        ));
-
-        // Create the movie
-        const movie = await Movies.create({
-            m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster
->>>>>>> 5a1c7a62252a6f0a6bf033d746152267ca84774a
         });
     });
 
@@ -51,13 +31,10 @@ const createMovies = async (req, res) => {
     }
 }
 
-<<<<<<< HEAD
 
 
 
 
-=======
->>>>>>> 5a1c7a62252a6f0a6bf033d746152267ca84774a
 // GET ALL MOVIES  
 const getMovies = async (req, res) => {
     const movies = await Movies.find({}).sort({createdAt: -1})
@@ -95,35 +72,20 @@ const deleteMovies = async (req, res) => {
 
 // UPDATE SINGLE MOVIES
 const updateMovies = async (req, res) => {
-    const { id } = req.params;
-
-    // Validate movie ID
+    const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such movie' });
+        return res.status(404).json({error: 'No such movies'})
     }
 
-    try {
-        // Update the movie
-        const movie = await Movies.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
+    const movies = await Movies.findOneAndUpdate({_id:id}, {
+        ...req.body
+    })
 
-        // Check if the movie exists
-        if (!movie) {
-            return res.status(404).json({ error: 'No such movie' });
-        }
-
-        // Update associated seats (Assuming m_seat contains seat IDs)
-        const updatedSeats = await Seats.updateMany({ m_id: id }, { ...req.body });
-
-        // Send the response with updated movie and seats
-        res.status(200).json({ movie, updatedSeats });
-    } catch (error) {
-        // Handle errors
-        res.status(500).json({ error: error.message });
+    if(!movies) {
+        return res.status(400).json({errror: 'No such movies'})
     }
-};
-
-
-
+    res.status(200).json(movies)
+}
 
 
 // UPDATE SEAT
@@ -161,6 +123,27 @@ const updateSeatOccupancy = async (req, res) => {
     }
 };
 
+const getMoviesByDate = async (req, res) => {
+    const { date } = req.params;
+
+    // Validate date format (optional)
+    // You may want to add more sophisticated validation based on your needs
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    try {
+        // Find movies where m_date is equal to the provided date
+        const movies = await Movies.find({ m_date: new Date(date) });
+
+        res.status(200).json(movies);
+    } catch (error) {
+        console.error('Error fetching movies by date:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
 
 // export function
 module.exports = {
@@ -171,6 +154,7 @@ module.exports = {
     updateMovies,
 
 
-    updateSeatOccupancy
+    updateSeatOccupancy,
+    getMoviesByDate
 
 }
