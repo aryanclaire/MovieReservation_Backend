@@ -18,6 +18,10 @@ const detailsSchema = new Schema({
         type: Number,
         required: true
     },
+    isCancel: {
+        type: Boolean,
+        required: false
+    },
     seat: [
         {
             s_id:{

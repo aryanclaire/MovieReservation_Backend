@@ -7,7 +7,7 @@ const Seats = require('../models/SeatsModel')
 
 // CREATE NEW 
 const createMovies = async (req, res) => {
-    const { m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster } = req.body;
+    const { m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster, m_type } = req.body;
 
     // add doc to db
     try {
@@ -25,7 +25,7 @@ const createMovies = async (req, res) => {
 
         // Create the movie
         const movie = await Movies.create({
-            m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster
+            m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster, m_type
         });
 
         // Associate the created seats with the movie
