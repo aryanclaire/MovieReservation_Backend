@@ -124,7 +124,7 @@ const updateMovieSeat = async (req, res) => {
         }
 
         // Update is_occupied field of the found seat
-        movie.m_seat[seatIndex].is_occupied = false;
+        movie.m_seat[seatIndex].is_occupied = true;
 
         // Save the updated movie document
         const updatedMovie = await movie.save();
