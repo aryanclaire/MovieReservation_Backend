@@ -17,7 +17,7 @@ const createMovies = async (req, res) => {
             Promise.all(Array.from({ length: seatsPerRow }, async (_, seatIndex) => {
                 const seat = seatIndex + 1;
                 const seatPosition = String.fromCharCode(65 + rowIndex) + seat; // Concatenate row and seat
-                const seatIsOccupied = false; // Assuming the seat is initially not occupied
+                const seatIsOccupied = true; // Assuming the seat is initially not occupied
                 const seatDoc = await Seats.create({ position: seatPosition, is_occupied: seatIsOccupied });
                 return seatDoc; // Return the created seat
             }))
@@ -37,7 +37,6 @@ const createMovies = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
-
 
 // GET ALL MOVIES  
 const getMovies = async (req, res) => {
@@ -76,20 +75,35 @@ const deleteMovies = async (req, res) => {
 
 // UPDATE SINGLE MOVIES
 const updateMovies = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
+
+    // Validate movie ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such movies'})
+        return res.status(404).json({ error: 'No such movie' });
     }
 
-    const movies = await Movies.findOneAndUpdate({_id:id}, {
-        ...req.body
-    })
+    try {
+        // Update the movie
+        const movie = await Movies.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
 
-    if(!movies) {
-        return res.status(400).json({errror: 'No such movies'})
+        // Check if the movie exists
+        if (!movie) {
+            return res.status(404).json({ error: 'No such movie' });
+        }
+
+        // Update associated seats (Assuming m_seat contains seat IDs)
+        const updatedSeats = await Seats.updateMany({ m_id: id }, { ...req.body });
+
+        // Send the response with updated movie and seats
+        res.status(200).json({ movie, updatedSeats });
+    } catch (error) {
+        // Handle errors
+        res.status(500).json({ error: error.message });
     }
-    res.status(200).json(movies)
-}
+};
+
+
+
 
 const updateMovieSeat = async (req, res) => {
     const { m_id, position } = req.params;

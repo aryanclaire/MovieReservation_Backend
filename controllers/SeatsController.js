@@ -7,7 +7,7 @@ const Seats = require('../models/SeatsModel')
 // CREATE NEW 
 const createSeats = async (req, res) => {
     // const { position, is_occupied } = req.body;
-    // const { id } = req.m_id
+
     try {
         const rows = 8;
         const seatsPerRow = 5;
@@ -15,7 +15,7 @@ const createSeats = async (req, res) => {
             Promise.all(Array.from({ length: seatsPerRow }, async (_, seatIndex) => {
                 const seat = seatIndex + 1;
                 const seatPosition = String.fromCharCode(65 + rowIndex) + seat; // Concatenate row and seat
-                const seatIsOccupied = false; // Assuming the seat is initially not occupied
+                const seatIsOccupied = true; // Assuming the seat is initially not occupied
                 const seats = await Seats.create({ position: seatPosition, is_occupied: seatIsOccupied });
                 return seats; // Return the created seat
             }))
@@ -25,6 +25,7 @@ const createSeats = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
+
 
 // GET ALL SEATS  
 const getSeats = async (req, res) => {
@@ -48,20 +49,30 @@ const getSeat = async (req, res) => {
 
 // UPDATE SINGLE MOVIES
 const updateSeat = async (req, res) => {
-    const { id } = req.params
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such seat'})
+    const { movieId, seatId } = req.params;
+
+    // Validate movie ID and seat ID
+    if (!mongoose.Types.ObjectId.isValid(movieId) || !mongoose.Types.ObjectId.isValid(seatId)) {
+        return res.status(404).json({ error: 'Invalid movie or seat ID' });
     }
 
-    const seats = await Seats.findOneAndUpdate({_id:id}, {
-        ...req.body
-    })
+    try {
+        // Update the seat
+        const seat = await Seats.findOneAndUpdate({ _id: seatId, m_id: movieId }, { ...req.body }, { new: true });
 
-    if(!seats) {
-        return res.status(400).json({errror: 'No such seat'})
+        // Check if the seat exists
+        if (!seat) {
+            return res.status(404).json({ error: 'No such seat in the movie' });
+        }
+
+        // Send the response with updated seat
+        res.status(200).json(seat);
+    } catch (error) {
+        // Handle errors
+        res.status(500).json({ error: error.message });
     }
-    res.status(200).json(seats)
-}
+};
+
 
 // export function
 module.exports = {
