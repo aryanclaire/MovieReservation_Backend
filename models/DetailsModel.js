@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const detailsSchema = new Schema({
+    res_id: {
+        type: String,
+        required: false
+    },
     f_name: {
         type: String,
         required: true
@@ -22,16 +26,14 @@ const detailsSchema = new Schema({
         type: Boolean,
         required: false
     },
-    seat: [
-        {
-            s_id:{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "SeatsModel",
-                // type: String,
-                required: false
-            }
-        }
-    ],
+    seat: {
+        type: Array,
+        required: false
+    },
+    amt_pay: {
+        type: Number,
+        required: false
+    },
     m_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "MoviesModel",
