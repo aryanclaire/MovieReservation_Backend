@@ -27,7 +27,7 @@ const detailsSchema = new Schema({
         required: false
     },
     seat: {
-        type: Array,
+        type: [String],
         required: false
     },
     amt_pay: {
