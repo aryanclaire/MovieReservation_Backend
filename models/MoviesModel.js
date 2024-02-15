@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 // list of attributes
-//  m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime,  m_endtime, m_price, m_cinema, m_poster
+//  m_title, m_desc, m_genre,m_type, m_mpa, m_hrs, m_date, m_starttime,  m_endtime, m_price, m_cinema, m_poster, m_type
 const moviesSchema = new Schema({
     m_title: {
         type: String,
@@ -13,6 +13,10 @@ const moviesSchema = new Schema({
         required: false
     },
     m_genre: {
+        type:String,
+        required: false
+    },
+    m_type: {
         type:String,
         required: false
     },
@@ -56,11 +60,11 @@ const moviesSchema = new Schema({
         {
             position: {
                 type: String,
-                required: true
+                required: false
             },
             is_occupied: {
                 type: Boolean,
-                required: true
+                required: false
             }
         }
     ]

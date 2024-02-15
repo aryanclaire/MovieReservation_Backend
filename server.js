@@ -14,7 +14,6 @@ const cors = require('cors');
 const mongoose = require('mongoose')
 const movieRoutes = require('./routes/MoviesRoutes') //NOT 
 const detailRoutes = require('./routes/DetailsRoutes')
-const seatRoutes = require('./routes/SeatsRoutes')
 const app = express();
 
 // Enable CORS for all routes

@@ -2,36 +2,29 @@ const mongoose = require('mongoose')
 
 // import model
 const Movies = require('../models/MoviesModel')
-const Seats = require('../models/SeatsModel')
 
 
-// CREATE NEW 
+// CREATE NEW MOVIE
 const createMovies = async (req, res) => {
-    const { m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster, m_type } = req.body;
+    const { m_title, m_desc, m_genre, m_type, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster } = req.body;
 
-    // add doc to db
-    try {
-        const rows = 8;
-        const seatsPerRow = 5;
-        const seatLayout = await Promise.all(Array.from({ length: rows }, async (_, rowIndex) =>
-            Promise.all(Array.from({ length: seatsPerRow }, async (_, seatIndex) => {
-                const seat = seatIndex + 1;
-                const seatPosition = String.fromCharCode(65 + rowIndex) + seat; // Concatenate row and seat
-                const seatIsOccupied = true; // Assuming the seat is initially not occupied
-                const seatDoc = await Seats.create({ position: seatPosition, is_occupied: seatIsOccupied });
-                return seatDoc; // Return the created seat
-            }))
-        ));
-
-        // Create the movie
-        const movie = await Movies.create({
-            m_title, m_desc, m_genre, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster, m_type
+    // Create m_seat array
+    const m_seat = [];
+    const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    const columns = ['1', '2', '3', '4', '5'];
+    
+    rows.forEach(row => {
+        columns.forEach(column => {
+            m_seat.push({
+                position: `${row}${column}`,
+                is_occupied: false
+            });
         });
+    });
 
-        // Associate the created seats with the movie
-        movie.m_seat = seatLayout.flat(); // Assuming the movie schema has m_seat field for storing seats
-        await movie.save();
-
+    // Add document to the database
+    try {
+        const movie = await Movies.create({ m_title, m_desc, m_genre, m_type, m_mpa, m_hrs, m_date, m_starttime, m_endtime, m_price, m_cinema, m_poster, m_seat });
         res.status(200).json(movie);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -75,67 +68,76 @@ const deleteMovies = async (req, res) => {
 
 // UPDATE SINGLE MOVIES
 const updateMovies = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such movies'})
+    }
+
+    const movies = await Movies.findOneAndUpdate({_id:id}, {
+        ...req.body
+    })
+
+    if(!movies) {
+        return res.status(400).json({errror: 'No such movies'})
+    }
+    res.status(200).json(movies)
+}
+
+
+// UPDATE SEAT
+const updateSeatOccupancy = async (req, res) => {
+    const { movieId, position } = req.params;
 
     // Validate movie ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such movie' });
-    }
-
-    try {
-        // Update the movie
-        const movie = await Movies.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
-
-        // Check if the movie exists
-        if (!movie) {
-            return res.status(404).json({ error: 'No such movie' });
-        }
-
-        // Update associated seats (Assuming m_seat contains seat IDs)
-        const updatedSeats = await Seats.updateMany({ m_id: id }, { ...req.body });
-
-        // Send the response with updated movie and seats
-        res.status(200).json({ movie, updatedSeats });
-    } catch (error) {
-        // Handle errors
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
-
-
-const updateMovieSeat = async (req, res) => {
-    const { m_id, position } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(m_id)) {
+    if (!mongoose.Types.ObjectId.isValid(movieId)) {
         return res.status(404).json({ error: 'Invalid movie ID' });
     }
 
     try {
-        const movie = await Movies.findById(m_id);
+        // Find the movie by ID
+        const movie = await Movies.findById(movieId);
         if (!movie) {
             return res.status(404).json({ error: 'Movie not found' });
         }
 
-        // Find the seat index in the m_seat array by position
-        const seatIndex = movie.m_seat.findIndex(seat => seat.position === position);
-        if (seatIndex === -1) {
+        // Find the seat in the movie's seat array
+        const seat = movie.m_seat.find(seat => seat.position === position);
+        if (!seat) {
             return res.status(404).json({ error: 'Seat not found' });
         }
 
-        // Update is_occupied field of the found seat
-        movie.m_seat[seatIndex].is_occupied = true;
+        // Update is_occupied property of the seat
+        seat.is_occupied = true;
 
-        // Save the updated movie document
-        const updatedMovie = await movie.save();
+        // Save the movie with updated seat occupancy
+        await movie.save();
 
-        res.status(200).json(updatedMovie);
+        return res.status(200).json({ message: 'Seat occupancy updated successfully' });
     } catch (error) {
-        console.error('Error updating movie seat:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+const getMoviesByDate = async (req, res) => {
+    const { date } = req.params;
+
+    // Validate date format (optional)
+    // You may want to add more sophisticated validation based on your needs
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    try {
+        // Find movies where m_date is equal to the provided date
+        const movies = await Movies.find({ m_date: new Date(date) });
+
+        res.status(200).json(movies);
+    } catch (error) {
+        console.error('Error fetching movies by date:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 // export function
 module.exports = {
@@ -144,5 +146,6 @@ module.exports = {
     getMovie,
     deleteMovies,
     updateMovies,
-    updateMovieSeat
+    updateSeatOccupancy,
+    getMoviesByDate
 }
