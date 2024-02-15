@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-// import model
 const Details = require('../models/DetailsModel')
 const Movies = require('../models/MoviesModel')
 
@@ -22,10 +21,6 @@ const getDetails = async (req, res) => {
     const details = await Details.find({}).sort({createdAt: -1})
     res.status(200).json(details)
 }
-
-
-
-
 
 // export function
 module.exports = {
