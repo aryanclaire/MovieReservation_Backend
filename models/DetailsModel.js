@@ -34,10 +34,8 @@ const detailsSchema = new Schema({
         type: Number,
         required: false
     },
-    m_id:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "MoviesModel",
-        // type: String,
+    m_id: {
+        type: String,
         required: false
     }
 }, {timestamps: true})
