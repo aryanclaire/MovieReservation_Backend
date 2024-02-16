@@ -6,10 +6,10 @@ const Movies = require('../models/MoviesModel')
 
 // CREATE NEW 
 const createDetails = async (req, res) => {
-    const { f_name, m_name, l_name, senior, res_id, seat, amt_pay } = req.body;
+    const { f_name, m_name, l_name, senior, res_id, seat, amt_pay, isCancel } = req.body;
 
     try {
-        const details = await Details.create({ f_name, m_name, l_name, senior, res_id, seat, amt_pay });
+        const details = await Details.create({ f_name, m_name, l_name, senior, res_id, seat, amt_pay, isCancel });
         res.status(200).json(details);
     } catch (error) {
         res.status(400).json({ error: error.message });
