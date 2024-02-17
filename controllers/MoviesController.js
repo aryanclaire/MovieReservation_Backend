@@ -119,11 +119,43 @@ const updateSeatOccupancy = async (req, res) => {
     }
 };
 
+// UPDATE SEAT VACANCY
+const updateSeatVacancy = async (req, res) => {
+    const { movieId, position } = req.params;
+
+    // Validate movie ID
+    if (!mongoose.Types.ObjectId.isValid(movieId)) {
+        return res.status(404).json({ error: 'Invalid movie ID' });
+    }
+
+    try {
+        // Find the movie by ID
+        const movie = await Movies.findById(movieId);
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+
+        // Find the seat in the movie's seat array
+        const seat = movie.m_seat.find(seat => seat.position === position);
+        if (!seat) {
+            return res.status(404).json({ error: 'Seat not found' });
+        }
+
+        // Update is_occupied property of the seat
+        seat.is_occupied = false;
+
+        // Save the movie with updated seat occupancy
+        await movie.save();
+
+        return res.status(200).json({ message: 'Seat occupancy updated successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 const getMoviesByDate = async (req, res) => {
     const { date } = req.params;
 
-    // Validate date format (optional)
-    // You may want to add more sophisticated validation based on your needs
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return res.status(400).json({ error: 'Invalid date format' });
     }
@@ -139,6 +171,8 @@ const getMoviesByDate = async (req, res) => {
     }
 };
 
+
+
 // export function
 module.exports = {
     createMovies,
@@ -147,5 +181,6 @@ module.exports = {
     deleteMovies,
     updateMovies,
     updateSeatOccupancy,
-    getMoviesByDate
+    getMoviesByDate,
+    updateSeatVacancy
 }

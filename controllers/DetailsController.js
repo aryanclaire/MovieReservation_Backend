@@ -22,8 +22,25 @@ const getDetails = async (req, res) => {
     res.status(200).json(details)
 }
 
+const updateReservation = async (req, res) => {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such Reservation'})
+    }
+
+    const reserve = await Details.findOneAndUpdate({_id:id}, {
+        ...req.body
+    })
+
+    if(!reserve) {
+        return res.status(400).json({errror: 'No such Reservation'})
+    }
+    res.status(200).json(reserve)
+}
+
 // export function
 module.exports = {
     createDetails,
-    getDetails
+    getDetails,
+    updateReservation
 }
